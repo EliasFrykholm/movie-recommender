@@ -6,6 +6,7 @@ public class MovieResponse {
     public final String description;
     public final String releaseDate;
     public final String[] genres;
+    public final int runtime;
     public final int rating;
     public final String coverArtUrl;
     public final String trailerUrl;
@@ -15,13 +16,14 @@ public class MovieResponse {
                          String description,
                          String releaseDate,
                          String[] genres,
-                         int rating,
+                         int runtime, int rating,
                          String coverArtUrl, String trailerUrl) {
         this.tmdbId = tmdbId;
         this.title = title;
         this.description = description;
         this.releaseDate = releaseDate;
         this.genres = genres;
+        this.runtime = runtime;
         this.rating = rating;
         this.coverArtUrl = coverArtUrl;
         this.trailerUrl = trailerUrl;

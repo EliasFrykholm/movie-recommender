@@ -19,6 +19,13 @@ public interface UserRepository extends Neo4jRepository<User, String> {
 
     @Query("MATCH (user:User {userId: $userId}) " +
             "WITH user " +
+            "MATCH (series:Series {tmdbId: $tmdbId}) " +
+            "MERGE (user)-[r:RATED]->(series) " +
+            "SET r.liked = $liked")
+    void addSeriesRelationship(String userId, String tmdbId, boolean liked);
+
+    @Query("MATCH (user:User {userId: $userId}) " +
+            "WITH user " +
             "MATCH (genre:Genre {genre: $genre}) " +
             "MERGE (user)-[r:RATED]->(genre) " +
             "SET r.liked = $liked")

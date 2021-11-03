@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PreferencesService {
+public class UserService {
     @Autowired
     private final UserRepository userRepo;
     private final MovieRepository movieRepo;
     private final SeriesRepository seriesRepo;
 
-    public PreferencesService(UserRepository userRepo, MovieRepository movieRepo, SeriesRepository seriesRepo) {
+    public UserService(UserRepository userRepo, MovieRepository movieRepo, SeriesRepository seriesRepo) {
         this.userRepo = userRepo;
         this.movieRepo = movieRepo;
         this.seriesRepo = seriesRepo;

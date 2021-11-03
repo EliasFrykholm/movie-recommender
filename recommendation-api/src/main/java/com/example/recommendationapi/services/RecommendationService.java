@@ -7,8 +7,6 @@ import com.example.recommendationapi.repository.neo4j.SeriesRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.util.Collection;
-
 @Service
 public class RecommendationService {
     private final MovieRepository movieRepo;
@@ -24,11 +22,8 @@ public class RecommendationService {
         return recommendations.map(movie -> movie.tmdbId);
     }
 
-    public String getSeriesRecommendation(String userId) {
-        Collection<Series> recommendations = seriesRepo.getSeriesRecommendations(userId);
-        if(recommendations.isEmpty()){
-            return "No recommendation";
-        }
-        return recommendations.stream().map(recommendation -> "Movie id: " + recommendation.tmdbId).reduce("", (s, s2) -> s + "\n" + s2);
+    public Flux<Integer> getSeriesRecommendation(String userId) {
+        Flux<Series> recommendations = seriesRepo.getSeriesRecommendations(userId);
+        return recommendations.map(series -> series.tmdbId);
     }
 }

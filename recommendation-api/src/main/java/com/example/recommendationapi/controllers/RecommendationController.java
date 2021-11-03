@@ -44,7 +44,7 @@ public class RecommendationController {
     }
 
     @GetMapping("/series")
-    public ResponseEntity<String> getSeriesRecommendation(@RequestBody RecommendationRequest request) {
+    public ResponseEntity<Flux<Integer>> getSeriesRecommendation(@RequestBody RecommendationRequest request) {
         if(!userRepo.existsByUserId(request.userId)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

@@ -44,13 +44,4 @@ public class MovieDataService {
                 .pathSegment(Integer.toString(page))
                 .build()).retrieve().bodyToFlux(Integer.class);
     }
-
-    public Flux<Integer> fetchPopularSeries(int page) {
-        return webClient.get().uri(moviedataPath, uriBuilder -> uriBuilder
-                .pathSegment("moviedata")
-                .pathSegment("tv")
-                .pathSegment("popular")
-                .pathSegment(Integer.toString(page))
-                .build()).retrieve().bodyToFlux(Integer.class);
-    }
 }

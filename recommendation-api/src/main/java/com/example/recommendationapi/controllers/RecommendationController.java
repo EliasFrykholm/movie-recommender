@@ -28,4 +28,12 @@ public class RecommendationController {
         }
         return ResponseEntity.ok(recommendationService.getMovieRecommendation(request.userId));
     }
+
+    @GetMapping("/series")
+    public ResponseEntity<String> getSeriesRecommendation(@RequestBody RecommendationRequest request) {
+        if(!userRepo.existsByUserId(request.userId)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(recommendationService.getSeriesRecommendation(request.userId));
+    }
 }

@@ -18,12 +18,9 @@ public class RecommendationService {
         this.seriesRepo = seriesRepo;
     }
 
-    public String getMovieRecommendation(String userId) {
+    public Collection<Integer> getMovieRecommendations(String userId) {
         Collection<Movie> recommendations = movieRepo.getMovieRecommendations(userId);
-        if(recommendations.isEmpty()){
-            return "No recommendation";
-        }
-        return recommendations.stream().map(recommendation -> "Movie id: " + recommendation.tmdbId).reduce("", (s, s2) -> s + "\n" + s2);
+        return recommendations.stream().map(movie -> movie.tmdbId).toList();
     }
 
     public String getSeriesRecommendation(String userId) {

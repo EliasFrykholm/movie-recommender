@@ -15,14 +15,14 @@ public interface UserRepository extends Neo4jRepository<User, String> {
             "MATCH (movie:Movie {tmdbId: $tmdbId}) " +
             "MERGE (user)-[r:RATED]->(movie) " +
             "SET r.liked = $liked")
-    void addMovieRelationship(String userId, String tmdbId, boolean liked);
+    void addMovieRelationship(String userId, int tmdbId, boolean liked);
 
     @Query("MATCH (user:User {userId: $userId}) " +
             "WITH user " +
             "MATCH (series:Series {tmdbId: $tmdbId}) " +
             "MERGE (user)-[r:RATED]->(series) " +
             "SET r.liked = $liked")
-    void addSeriesRelationship(String userId, String tmdbId, boolean liked);
+    void addSeriesRelationship(String userId, int tmdbId, boolean liked);
 
     @Query("MATCH (user:User {userId: $userId}) " +
             "WITH user " +
@@ -30,4 +30,7 @@ public interface UserRepository extends Neo4jRepository<User, String> {
             "MERGE (user)-[r:RATED]->(genre) " +
             "SET r.liked = $liked")
     void addGenreRelationship(String userId, String genre, boolean liked);
+
+    @Query("MATCH (user:User {userId: $userId}) RETURN exists((user)-[:RATED]->({tmdbId: $tmdbId}))")
+    boolean hasRated(String userId, int tmdbId);
 }

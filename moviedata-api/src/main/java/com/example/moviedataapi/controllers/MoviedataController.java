@@ -5,6 +5,7 @@ import com.example.moviedataapi.dtos.SeriesResponse;
 import com.example.moviedataapi.services.MovieDataService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
@@ -19,7 +20,7 @@ public class MoviedataController {
     }
 
     @GetMapping("/movie/{id}")
-    public Mono<MovieResponse> getMovieData(@PathVariable String id){
+    public Mono<MovieResponse> getMovieData(@PathVariable int id){
         return movieDataService.getMovieDetails(id)
                 .zipWith(movieDataService.getYoutubeTrailer(id))
                 .map(tuple -> new MovieResponse(id, tuple.getT1(), tuple.getT2()));
@@ -31,7 +32,7 @@ public class MoviedataController {
     }
 
     @GetMapping("/movies/popular/{page}")
-    public Mono<Collection<String>> getPopularMovies(@PathVariable int page){
+    public Flux<Integer> getPopularMovies(@PathVariable int page){
         return movieDataService.getPopularMovieIds(page);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 
 public class MovieResponse {
-    public final String tmdbId;
+    public final int tmdbId;
     public final String title;
     public final String description;
     public final Date releaseDate;
@@ -18,7 +18,7 @@ public class MovieResponse {
     public final String coverArtUrl;
     public final String trailerUrl;
 
-    public MovieResponse(String tmdbId,
+    public MovieResponse(int tmdbId,
                          String title,
                          String description,
                          Date releaseDate,
@@ -36,7 +36,7 @@ public class MovieResponse {
         this.trailerUrl = trailerUrl;
     }
 
-    public MovieResponse(String tmdbId, MovieDetailsResponse details, String trailer) {
+    public MovieResponse(int tmdbId, MovieDetailsResponse details, String trailer) {
         this.tmdbId = tmdbId;
         this.title = details.title();
         this.description = details.overview();

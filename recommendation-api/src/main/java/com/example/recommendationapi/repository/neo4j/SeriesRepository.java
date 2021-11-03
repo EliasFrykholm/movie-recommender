@@ -9,11 +9,11 @@ import java.util.Collection;
 
 public interface SeriesRepository extends Neo4jRepository<Series, String> {
     @Query("MERGE (n:Series {tmdbId: $tmdbId}) RETURN n")
-    Movie addSeries(String tmdbId);
+    Movie addSeries(int tmdbId);
 
     @Query("MATCH (user:User {userId: $userId})-[myRate:RATED]->()<-[theirRate:RATED]-(similarUser:User)-[:RATED {liked: true}]->(potentialSeries:Series) " +
             "WHERE myRate.liked = theirRate.liked " +
-            "AND NOT (user)-[:RATED]->(potentialSeries) " +
+            "AND NOT exists((user)-[:RATED]->(potentialSeries)) " +
             "RETURN potentialSeries, count(similarUser) as frequency " +
             "ORDER BY frequency DESC " +
             "LIMIT 5")

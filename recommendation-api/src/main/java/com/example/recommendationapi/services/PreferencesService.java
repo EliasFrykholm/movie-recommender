@@ -32,13 +32,17 @@ public class PreferencesService {
         }
     }
 
-    public void addMovieRating(String userId, String tmdbId, boolean liked){
+    public void addMovieRating(String userId, int tmdbId, boolean liked){
         userRepo.addUser(userId);
         movieRepo.addMovie(tmdbId);
         userRepo.addMovieRelationship(userId, tmdbId, liked);
     }
 
-    public void addSeriesRating(String userId, String tmdbId, boolean liked){
+    public boolean hasRated(String userId, int tmbdId) {
+        return userRepo.hasRated(userId, tmbdId);
+    }
+
+    public void addSeriesRating(String userId, int tmdbId, boolean liked){
         userRepo.addUser(userId);
         seriesRepo.addSeries(tmdbId);
         userRepo.addSeriesRelationship(userId, tmdbId, liked);

@@ -11,5 +11,5 @@ public record MovieDetailsResponse(String title,
                                    Genre[] genres,
                                    int runtime,
                                    int vote_average,
-                                   String backdrop_path) {
+                                   String poster_path) {
 }

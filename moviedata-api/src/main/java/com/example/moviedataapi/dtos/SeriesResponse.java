@@ -41,7 +41,7 @@ public class SeriesResponse {
         this.releaseDate = series.first_air_date();
         this.genres = Arrays.stream(series.genres()).map(Genre::name).toList();
         this.rating = series.vote_average();
-        this.coverArtUrl = series.poster_path();
+        this.coverArtUrl = "https://image.tmdb.org/t/p/original" + series.poster_path();
         this.trailerUrl = trailerUrl;
         this.episodes = series.number_of_episodes();
     }

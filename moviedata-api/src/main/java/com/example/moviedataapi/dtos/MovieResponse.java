@@ -43,7 +43,7 @@ public class MovieResponse {
         this.genres = Arrays.stream(details.genres()).map(genre -> genre.name()).toList();
         this.runtime = details.runtime();
         this.rating = details.vote_average();
-        this.coverArtUrl = details.backdrop_path();
+        this.coverArtUrl = "https://image.tmdb.org/t/p/original" + details.poster_path();
         this.trailerUrl = trailer;
     }
 }

@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.Collection;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("recommendation")
@@ -37,15 +33,14 @@ public class RecommendationController {
         if(!userRepo.existsByUserId(request.userId)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Collection<Integer> recommendations = recommendationService.getMovieRecommendations(request.userId);
-        if(!recommendations.isEmpty()){
-            Flux<MovieResponse> movies = Flux.fromStream(recommendations.stream())
-                    .flatMap(movieDataService::fetchMovieData);
-            return ResponseEntity.ok(movies);
-        } else {
-            Flux<Integer> popularNotSeen = movieDataService.fetchPopularMovies(1).filter(id -> !userRepo.hasRated(request.userId, id));
-            return ResponseEntity.ok(popularNotSeen.flatMap(movieDataService::fetchMovieData));
-        }
+        Flux<Integer> recommendations = recommendationService.getMovieRecommendations(request.userId).switchIfEmpty(getPopular(request.userId, 1));
+        return ResponseEntity.ok(recommendations.flatMap(movieDataService::fetchMovieData));
+    }
+
+    public Flux<Integer> getPopular(String userId, int page){
+        if(page > 500)
+            return null;
+        return movieDataService.fetchPopularMovies(page).filter(id -> !userRepo.hasRated(userId, id)).switchIfEmpty(Flux.defer(() -> getPopular(userId, page+1)));
     }
 
     @GetMapping("/series")

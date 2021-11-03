@@ -5,6 +5,7 @@ import com.example.recommendationapi.models.Series;
 import com.example.recommendationapi.repository.neo4j.MovieRepository;
 import com.example.recommendationapi.repository.neo4j.SeriesRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.Collection;
 
@@ -18,9 +19,9 @@ public class RecommendationService {
         this.seriesRepo = seriesRepo;
     }
 
-    public Collection<Integer> getMovieRecommendations(String userId) {
-        Collection<Movie> recommendations = movieRepo.getMovieRecommendations(userId);
-        return recommendations.stream().map(movie -> movie.tmdbId).toList();
+    public Flux<Integer> getMovieRecommendations(String userId) {
+        Flux<Movie> recommendations = movieRepo.getMovieRecommendations(userId);
+        return recommendations.map(movie -> movie.tmdbId);
     }
 
     public String getSeriesRecommendation(String userId) {

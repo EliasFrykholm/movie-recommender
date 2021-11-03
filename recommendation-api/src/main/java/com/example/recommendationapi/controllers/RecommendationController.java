@@ -2,6 +2,8 @@ package com.example.recommendationapi.controllers;
 
 import com.example.recommendationapi.dtos.MovieResponse;
 import com.example.recommendationapi.dtos.RecommendationRequest;
+import com.example.recommendationapi.dtos.SeriesResponse;
+import com.example.recommendationapi.models.DataType;
 import com.example.recommendationapi.repository.neo4j.UserRepository;
 import com.example.recommendationapi.services.MovieDataService;
 import com.example.recommendationapi.services.RecommendationService;
@@ -33,21 +35,22 @@ public class RecommendationController {
         if(!userRepo.existsByUserId(request.userId)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Flux<Integer> recommendations = recommendationService.getMovieRecommendations(request.userId).switchIfEmpty(getPopular(request.userId, 1));
+        Flux<Integer> recommendations = recommendationService.getMovieRecommendations(request.userId).switchIfEmpty(getPopular(DataType.MOVIE, request.userId, 1));
         return ResponseEntity.ok(recommendations.flatMap(movieDataService::fetchMovieData));
     }
 
-    public Flux<Integer> getPopular(String userId, int page){
+    public Flux<Integer> getPopular(DataType type, String userId, int page){
         if(page > 500)
             return null;
-        return movieDataService.fetchPopularMovies(page).filter(id -> !userRepo.hasRated(userId, id)).switchIfEmpty(Flux.defer(() -> getPopular(userId, page+1)));
+        return movieDataService.fetchPopular(type, page).filter(id -> !userRepo.hasRated(userId, id)).switchIfEmpty(Flux.defer(() -> getPopular(type, userId, page+1)));
     }
 
     @GetMapping("/series")
-    public ResponseEntity<Flux<Integer>> getSeriesRecommendation(@RequestBody RecommendationRequest request) {
+    public ResponseEntity<Flux<SeriesResponse>> getSeriesRecommendation(@RequestBody RecommendationRequest request) {
         if(!userRepo.existsByUserId(request.userId)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok(recommendationService.getSeriesRecommendation(request.userId));
+        Flux<Integer> recommendations = recommendationService.getSeriesRecommendation(request.userId).switchIfEmpty(getPopular(DataType.SERIES, request.userId, 1));
+        return ResponseEntity.ok(recommendations.flatMap(movieDataService::fetchSeriesData));
     }
 }

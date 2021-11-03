@@ -2,6 +2,7 @@ package com.example.recommendationapi.services;
 
 import com.example.recommendationapi.dtos.MovieResponse;
 import com.example.recommendationapi.dtos.SeriesResponse;
+import com.example.recommendationapi.models.DataType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -35,10 +36,10 @@ public class MovieDataService {
                 .build()).retrieve().bodyToMono(SeriesResponse.class);
     }
 
-    public Flux<Integer> fetchPopularMovies(int page) {
+    public Flux<Integer> fetchPopular(DataType type, int page) {
         return webClient.get().uri(moviedataPath, uriBuilder -> uriBuilder
                 .pathSegment("moviedata")
-                .pathSegment("movie")
+                .pathSegment(type.toString())
                 .pathSegment("popular")
                 .pathSegment(Integer.toString(page))
                 .build()).retrieve().bodyToFlux(Integer.class);

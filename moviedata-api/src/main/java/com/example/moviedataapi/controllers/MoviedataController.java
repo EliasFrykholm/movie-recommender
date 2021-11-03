@@ -2,22 +2,36 @@ package com.example.moviedataapi.controllers;
 
 import com.example.moviedataapi.dtos.MovieResponse;
 import com.example.moviedataapi.dtos.SeriesResponse;
+import com.example.moviedataapi.services.MovieDataService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
+
+import java.util.Collection;
 
 @RestController
 @RequestMapping("moviedata")
 public class MoviedataController {
+    public final MovieDataService movieDataService;
 
-    @GetMapping("/movie")
-    public ResponseEntity<MovieResponse> getMovieData(String tmdbId){
+    public MoviedataController(MovieDataService movieDataService) {
+        this.movieDataService = movieDataService;
+    }
+
+    @GetMapping("/movie/{id}")
+    public Mono<MovieResponse> getMovieData(@PathVariable String id){
+        return movieDataService.getMovieDetails(id)
+                .zipWith(movieDataService.getYoutubeTrailer(id))
+                .map(tuple -> new MovieResponse(id, tuple.getT1(), tuple.getT2()));
+    }
+
+    @GetMapping("/series/{id}")
+    public ResponseEntity<SeriesResponse> getSeriesData(@PathVariable String id){
         return ResponseEntity.internalServerError().build();
     }
 
-    @GetMapping("/series")
-    public ResponseEntity<SeriesResponse> getSeriesData(String tmdbId){
-        return ResponseEntity.internalServerError().build();
+    @GetMapping("/movies/popular/{page}")
+    public Mono<Collection<String>> getPopularMovies(@PathVariable int page){
+        return movieDataService.getPopularMovieIds(page);
     }
 }

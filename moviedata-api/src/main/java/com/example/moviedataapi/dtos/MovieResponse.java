@@ -1,7 +1,6 @@
 package com.example.moviedataapi.dtos;
 
 import com.example.moviedataapi.dtos.tmdb.MovieDetailsResponse;
-import com.example.moviedataapi.dtos.tmdb.MovieTrailerResponse;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +13,7 @@ public class MovieResponse {
     public final Date releaseDate;
     public final Collection<String> genres;
     public final int runtime;
-    public final int rating;
+    public final double rating;
     public final String coverArtUrl;
     public final String trailerUrl;
 

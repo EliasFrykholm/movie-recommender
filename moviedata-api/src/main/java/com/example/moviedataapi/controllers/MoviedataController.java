@@ -3,12 +3,9 @@ package com.example.moviedataapi.controllers;
 import com.example.moviedataapi.dtos.MovieResponse;
 import com.example.moviedataapi.dtos.SeriesResponse;
 import com.example.moviedataapi.services.MovieDataService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Collection;
 
 @RestController
 @RequestMapping("moviedata")
@@ -22,13 +19,15 @@ public class MoviedataController {
     @GetMapping("/movie/{id}")
     public Mono<MovieResponse> getMovieData(@PathVariable int id){
         return movieDataService.getMovieDetails(id)
-                .zipWith(movieDataService.getYoutubeTrailer(id))
+                .zipWith(movieDataService.getMovieTrailer(id))
                 .map(tuple -> new MovieResponse(id, tuple.getT1(), tuple.getT2()));
     }
 
     @GetMapping("/series/{id}")
-    public ResponseEntity<SeriesResponse> getSeriesData(@PathVariable String id){
-        return ResponseEntity.internalServerError().build();
+    public Mono<SeriesResponse> getSeriesData(@PathVariable int id){
+        return movieDataService.getSeriesDetails(id)
+                .zipWith(movieDataService.getSeriesTrailers(id))
+                .map(tuple -> new SeriesResponse(id, tuple.getT1(), tuple.getT2()));
     }
 
     @GetMapping("/movies/popular/{page}")

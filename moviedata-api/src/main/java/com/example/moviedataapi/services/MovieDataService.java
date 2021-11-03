@@ -74,10 +74,10 @@ public class MovieDataService {
                 .build()).retrieve().bodyToMono(SeriesDetailsResponse.class);
     }
 
-    public Flux<Integer> getPopularMovieIds(int page) {
+    public Flux<Integer> getPopularIds(String type, int page) {
         return webClient.get().uri(tmdbPath, uriBuilder -> uriBuilder
                 .pathSegment("discover")
-                .pathSegment("movie")
+                .pathSegment(type)
                 .queryParam("api_key", tmdbApiKey)
                 .queryParam("page", page)
                 .build()).retrieve().bodyToMono(DiscoverResponse.class)

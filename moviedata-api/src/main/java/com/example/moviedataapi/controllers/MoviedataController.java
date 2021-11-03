@@ -30,8 +30,8 @@ public class MoviedataController {
                 .map(tuple -> new SeriesResponse(id, tuple.getT1(), tuple.getT2()));
     }
 
-    @GetMapping("/movies/popular/{page}")
-    public Flux<Integer> getPopularMovies(@PathVariable int page){
-        return movieDataService.getPopularMovieIds(page);
+    @GetMapping("/{type}/popular/{page}")
+    public Flux<Integer> getPopular(@PathVariable String type, @PathVariable int page){
+        return movieDataService.getPopularIds(type, page);
     }
 }

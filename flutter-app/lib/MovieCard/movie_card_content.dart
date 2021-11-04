@@ -1,9 +1,13 @@
 import 'package:app/MovieCard/expanded_section.dart';
 import 'package:app/MovieCard/movie_description.dart';
+import 'package:app/models/movie_data.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MovieCardContent extends StatefulWidget {
-  const MovieCardContent({Key? key}) : super(key: key);
+  const MovieCardContent({Key? key, required this.movieData}) : super(key: key);
+
+  final MovieData movieData;
 
   @override
   State<MovieCardContent> createState() => _MovieCardContentState();
@@ -11,11 +15,10 @@ class MovieCardContent extends StatefulWidget {
 
 class _MovieCardContentState extends State<MovieCardContent> {
   bool _expandedDescription = false;
-  String movie = "Movie title";
-  String year = "2021";
-  List<String> genres = ["Sci-fi", "Action"];
-  String description =
-      "Investigative journalist Eddie Brock attempts a comeback following a scandal, but accidentally becomes the host of Venom, a violent, super powerful alien symbiote. Soon, he must rely on his newfound powers to protect the world from a shadowy organization looking for a symbiote of their own.";
+
+  void _launchTrailer(String url) async {
+    await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
+  }
 
   void _toggleExpandedDescription() {
     setState(() {
@@ -32,32 +35,33 @@ class _MovieCardContentState extends State<MovieCardContent> {
             color: Colors.black87,
             child: Row(children: [
               Text(
-                "$movie $year",
+                "${widget.movieData.title} ${widget.movieData.releaseDate.year}",
                 style: const TextStyle(fontSize: 20),
               ),
               const Spacer(),
               IconButton(
-                  onPressed: () => {}, icon: const Icon(Icons.smart_display)),
+                  onPressed: () =>
+                      {_launchTrailer(widget.movieData.trailerUrl)},
+                  icon: const Icon(Icons.smart_display)),
             ])),
         Expanded(
             child: InkWell(
                 onTap: _toggleExpandedDescription,
                 child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage(
-                              "https://image.tmdb.org/t/p/original/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg"),
+                          image: NetworkImage(widget.movieData.coverArtUrl),
                           fit: BoxFit.cover),
                     ),
                     alignment: Alignment.bottomCenter,
                     child: ExpandedSection(
                         expand: _expandedDescription,
                         child: MovieDescription(
-                          rating: 6.5,
-                          releaseDate: DateTime(1),
-                          runtime: 130,
-                          description: description,
-                          genres: genres,
+                          rating: widget.movieData.rating,
+                          releaseDate: widget.movieData.releaseDate,
+                          runtime: widget.movieData.runtime,
+                          description: widget.movieData.description,
+                          genres: widget.movieData.genres,
                         )))))
       ],
     );

@@ -9,10 +9,7 @@ import com.example.recommendationapi.services.MovieDataService;
 import com.example.recommendationapi.services.RecommendationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
@@ -30,12 +27,12 @@ public class RecommendationController {
         this.movieDataService = movieDataService;
     }
 
-    @GetMapping("/movie")
-    public ResponseEntity<Flux<MovieResponse>> getMovieRecommendation(@RequestBody RecommendationRequest request){
-        if(!userRepo.existsByUserId(request.userId)){
+    @GetMapping("/movie/{userId}")
+    public ResponseEntity<Flux<MovieResponse>> getMovieRecommendation(@PathVariable String userId){
+        if(!userRepo.existsByUserId(userId)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Flux<Integer> recommendations = recommendationService.getMovieRecommendations(request.userId).switchIfEmpty(getPopular(DataType.MOVIE, request.userId, 1));
+        Flux<Integer> recommendations = recommendationService.getMovieRecommendations(userId).switchIfEmpty(getPopular(DataType.MOVIE, userId, 1));
         return ResponseEntity.ok(recommendations.flatMap(movieDataService::fetchMovieData));
     }
 

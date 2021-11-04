@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<List<MovieData>> fetchMovie() async {
     final response = await http
-        .get(Uri.parse('http://localhost:8080/recommendation/movie/sofie'));
+        .get(Uri.parse('http://localhost:8080/recommendation/movie/elias'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -53,6 +53,24 @@ class _MyHomePageState extends State<MyHomePage> {
       // then throw an exception.
       print(response.statusCode);
       throw Exception('Failed to load data');
+    }
+  }
+
+  void _rateMovie(bool liked, int tmdbId) async {
+    final response = await http.post(
+        Uri.parse("http://localhost:8080/rate/movie"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body:
+            json.encode({"userId": "elias", "tmdbId": tmdbId, "liked": liked}));
+
+    if (response.statusCode == 200) {
+      fetchMovie();
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      print(response.statusCode);
     }
   }
 
@@ -75,7 +93,23 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Expanded(
-                      child: MovieCard(movieData: snapshot.data!.first));
+                      child: Stack(
+                          children: snapshot.data!
+                              .map((e) => Dismissible(
+                                  key: ValueKey(e.tmdbId),
+                                  onDismissed: (direction) {
+                                    if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      _rateMovie(
+                                          true, snapshot.data!.first.tmdbId);
+                                    } else {
+                                      _rateMovie(
+                                          true, snapshot.data!.first.tmdbId);
+                                    }
+                                  },
+                                  child: MovieCard(
+                                      movieData: snapshot.data!.first)))
+                              .toList()));
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
                 }

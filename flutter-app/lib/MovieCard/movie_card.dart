@@ -1,4 +1,4 @@
-import 'package:app/movie_card_content.dart';
+import 'package:app/MovieCard/movie_card_content.dart';
 import 'package:flutter/material.dart';
 
 class MovieCard extends StatefulWidget {

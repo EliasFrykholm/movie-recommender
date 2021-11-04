@@ -1,7 +1,7 @@
 import 'package:app/action_buttons_widget.dart';
 import 'package:flutter/material.dart';
 
-import 'movie_card.dart';
+import 'MovieCard/movie_card.dart';
 
 void main() {
   runApp(const MyApp());

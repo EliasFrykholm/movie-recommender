@@ -1,4 +1,5 @@
-import 'package:app/expanded_section.dart';
+import 'package:app/MovieCard/expanded_section.dart';
+import 'package:app/MovieCard/movie_description.dart';
 import 'package:flutter/material.dart';
 
 class MovieCardContent extends StatefulWidget {
@@ -12,6 +13,7 @@ class _MovieCardContentState extends State<MovieCardContent> {
   bool _expandedDescription = false;
   String movie = "Movie title";
   String year = "2021";
+  List<String> genres = ["Sci-fi", "Action"];
   String description =
       "Investigative journalist Eddie Brock attempts a comeback following a scandal, but accidentally becomes the host of Venom, a violent, super powerful alien symbiote. Soon, he must rely on his newfound powers to protect the world from a shadowy organization looking for a symbiote of their own.";
 
@@ -50,12 +52,13 @@ class _MovieCardContentState extends State<MovieCardContent> {
                     alignment: Alignment.bottomCenter,
                     child: ExpandedSection(
                         expand: _expandedDescription,
-                        child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                                padding: const EdgeInsets.all(10),
-                                color: Colors.black87,
-                                child: Text(description)))))))
+                        child: MovieDescription(
+                          rating: 6.5,
+                          releaseDate: DateTime(1),
+                          runtime: 130,
+                          description: description,
+                          genres: genres,
+                        )))))
       ],
     );
   }

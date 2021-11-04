@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 class ExpandedSection extends StatefulWidget {
   final Widget child;
   final bool expand;
+
   ExpandedSection({this.expand = false, required this.child});
 
   @override

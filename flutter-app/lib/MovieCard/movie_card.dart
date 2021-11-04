@@ -1,14 +1,8 @@
 import 'package:app/MovieCard/movie_card_content.dart';
 import 'package:flutter/material.dart';
 
-class MovieCard extends StatefulWidget {
+class MovieCard extends StatelessWidget {
   const MovieCard({Key? key}) : super(key: key);
-
-  @override
-  State<MovieCard> createState() => _MovieCardState();
-}
-
-class _MovieCardState extends State<MovieCard> {
   @override
   Widget build(BuildContext context) {
     return Container(

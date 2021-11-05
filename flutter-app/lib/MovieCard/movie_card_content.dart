@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class MovieCardContent extends StatefulWidget {
   const MovieCardContent({Key? key, required this.movieData}) : super(key: key);
-
   final MovieData movieData;
 
   @override
@@ -32,13 +31,13 @@ class _MovieCardContentState extends State<MovieCardContent> {
       children: [
         Container(
             padding: const EdgeInsets.all(5),
-            color: Colors.black87,
+            color: Colors.black,
             child: Row(children: [
-              Text(
-                "${widget.movieData.title} ${widget.movieData.releaseDate.year}",
-                style: const TextStyle(fontSize: 20),
-              ),
-              const Spacer(),
+              FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    "${widget.movieData.title} ${widget.movieData.releaseDate.year}",
+                  )),
               IconButton(
                   onPressed: () =>
                       {_launchTrailer(widget.movieData.trailerUrl)},

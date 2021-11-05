@@ -9,7 +9,15 @@ class MovieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+                color: Colors.black38,
+                spreadRadius: 4,
+                blurRadius: 1,
+                offset: Offset(-4, 4)),
+          ]),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: MovieCardContent(

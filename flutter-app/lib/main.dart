@@ -92,29 +92,38 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Expanded(
-              child: Stack(children: [
-            if (_movieData.isEmpty)
-              const CircularProgressIndicator()
-            else
-              ..._movieData.map((movie) => Dismissible(
-                  key: UniqueKey(),
-                  onDismissed: (direction) {
-                    if (direction == DismissDirection.startToEnd) {
-                      _rateMovie(true, movie.tmdbId);
-                    } else {
-                      _rateMovie(true, movie.tmdbId);
-                    }
-                    setState(() {
-                      _movieData.remove(movie);
-                    });
-                    if (_movieData.length <= 2) {
-                      fetchMovies();
-                    }
-                  },
-                  child: MovieCard(movieData: movie)))
+              child: Stack(
+                  fit: StackFit.expand,
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(),
+                    if (_movieData.isEmpty)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      ..._movieData.take(2).map((movie) => Container(
+                          margin: _movieData.first == movie
+                              ? const EdgeInsets.all(15)
+                              : const EdgeInsets.only(
+                                  left: 5, right: 25, top: 5, bottom: 25),
+                          child: Dismissible(
+                              key: UniqueKey(),
+                              onDismissed: (direction) {
+                                if (direction == DismissDirection.startToEnd) {
+                                  _rateMovie(true, movie.tmdbId);
+                                } else {
+                                  _rateMovie(true, movie.tmdbId);
+                                }
+                                setState(() {
+                                  _movieData.remove(movie);
+                                });
+                                if (_movieData.length <= 2) {
+                                  fetchMovies();
+                                }
+                              },
+                              child: MovieCard(movieData: movie))))
 
-            // By default, show a loading spinner.
-          ])),
+                    // By default, show a loading spinner.
+                  ].reversed.toList())),
           const Align(
               alignment: Alignment.bottomCenter, child: ActionButtonsWidget())
         ],

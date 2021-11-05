@@ -33,11 +33,11 @@ class _MovieCardContentState extends State<MovieCardContent> {
             padding: const EdgeInsets.all(5),
             color: Colors.black,
             child: Row(children: [
-              FittedBox(
-                  fit: BoxFit.fitWidth,
+              Expanded(
                   child: Text(
-                    "${widget.movieData.title} ${widget.movieData.releaseDate.year}",
-                  )),
+                "${widget.movieData.title} (${widget.movieData.releaseDate.year})",
+                textScaleFactor: 1.5,
+              )),
               IconButton(
                   onPressed: () =>
                       {_launchTrailer(widget.movieData.trailerUrl)},

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/action_buttons_widget.dart';
+import 'package:app/genre_rating.dart';
 import 'package:app/models/movie_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,15 +23,13 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.deepOrange,
           primarySwatch: Colors.deepOrange,
           brightness: Brightness.dark),
-      home: const MyHomePage(title: 'Movie recommender'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -41,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void fetchMovies() async {
     final response = await http
-        .get(Uri.parse('http://localhost:8080/recommendation/movie/elias'));
+        .get(Uri.parse('http://localhost:8080/recommendation/movie/test123'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -52,6 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _movieData.addAll(movies);
       });
+    } else if (response.statusCode == 401) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => GenreRating()),
+      );
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -87,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("MovieFinder"),
       ),
       body: Column(
         children: [

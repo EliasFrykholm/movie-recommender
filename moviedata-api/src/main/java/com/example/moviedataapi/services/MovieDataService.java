@@ -24,7 +24,29 @@ public class MovieDataService {
         this.webClient = webClient;
     }
 
-    private String getTrailerLink(Trailer trailer){
+    public Flux<String> getMovieGenres() {
+        return webClient.get().uri(tmdbPath, uriBuilder -> uriBuilder
+                        .pathSegment("genre")
+                        .pathSegment("movie")
+                        .pathSegment("list")
+                        .queryParam("api_key", tmdbApiKey)
+                        .build()).retrieve().bodyToMono(GenresResponse.class)
+                        .flatMapMany(genresResponse -> Flux.fromArray(genresResponse.genres()))
+                        .map(Genre::name);
+    }
+
+    public Flux<String> getSeriesGenres() {
+        return webClient.get().uri(tmdbPath, uriBuilder -> uriBuilder
+                        .pathSegment("genre")
+                        .pathSegment("tv")
+                        .pathSegment("list")
+                        .queryParam("api_key", tmdbApiKey)
+                        .build()).retrieve().bodyToMono(GenresResponse.class)
+                        .flatMapMany(genresResponse -> Flux.fromArray(genresResponse.genres()))
+                        .map(Genre::name);
+    }
+
+    private String getTrailerLink(Trailer trailer) {
         return "https://www.youtube.com/watch?v=" + trailer.key();
     }
 
@@ -36,24 +58,24 @@ public class MovieDataService {
                 .orElse("");
     }
 
-    public Mono<String> getMovieTrailer(int tmdbId){
+    public Mono<String> getMovieTrailer(int tmdbId) {
         return webClient.get().uri(tmdbPath, uriBuilder -> uriBuilder
-                .pathSegment("movie")
-                .pathSegment(Integer.toString(tmdbId))
-                .pathSegment("videos")
-                .queryParam("api_key", tmdbApiKey)
-                .build()).retrieve().bodyToMono(TrailerResponse.class)
+                        .pathSegment("movie")
+                        .pathSegment(Integer.toString(tmdbId))
+                        .pathSegment("videos")
+                        .queryParam("api_key", tmdbApiKey)
+                        .build()).retrieve().bodyToMono(TrailerResponse.class)
                 .map(TrailerResponse::results)
                 .map(this::getYoutubeTrailer);
     }
 
-    public Mono<String> getSeriesTrailers(int tmdbId){
+    public Mono<String> getSeriesTrailers(int tmdbId) {
         return webClient.get().uri(tmdbPath, uriBuilder -> uriBuilder
-                .pathSegment("tv")
-                .pathSegment(Integer.toString(tmdbId))
-                .pathSegment("videos")
-                .queryParam("api_key", tmdbApiKey)
-                .build()).retrieve().bodyToMono(TrailerResponse.class)
+                        .pathSegment("tv")
+                        .pathSegment(Integer.toString(tmdbId))
+                        .pathSegment("videos")
+                        .queryParam("api_key", tmdbApiKey)
+                        .build()).retrieve().bodyToMono(TrailerResponse.class)
                 .map(TrailerResponse::results)
                 .map(this::getYoutubeTrailer);
     }
@@ -76,11 +98,11 @@ public class MovieDataService {
 
     public Flux<Integer> getPopularIds(String type, int page) {
         return webClient.get().uri(tmdbPath, uriBuilder -> uriBuilder
-                .pathSegment("discover")
-                .pathSegment(type)
-                .queryParam("api_key", tmdbApiKey)
-                .queryParam("page", page)
-                .build()).retrieve().bodyToMono(DiscoverResponse.class)
+                        .pathSegment("discover")
+                        .pathSegment(type)
+                        .queryParam("api_key", tmdbApiKey)
+                        .queryParam("page", page)
+                        .build()).retrieve().bodyToMono(DiscoverResponse.class)
                 .flatMapMany(discoverResponse -> Flux.fromArray(discoverResponse.results()))
                 .map(TmdbIdResponse::id);
     }

@@ -37,9 +37,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<MovieData>> movieData;
+  List<MovieData> _movieData = [];
 
-  Future<List<MovieData>> fetchMovie() async {
+  void fetchMovies() async {
     final response = await http
         .get(Uri.parse('http://localhost:8080/recommendation/movie/elias'));
 
@@ -47,7 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       List<dynamic> responseData = jsonDecode(response.body);
-      return responseData.map((e) => MovieData.fromJson(e)).toList();
+      List<MovieData> movies =
+          responseData.map((e) => MovieData.fromJson(e)).toList();
+      setState(() {
+        _movieData.addAll(movies);
+      });
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -66,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
             json.encode({"userId": "elias", "tmdbId": tmdbId, "liked": liked}));
 
     if (response.statusCode == 200) {
-      fetchMovie();
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -77,49 +80,45 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    movieData = fetchMovie();
+    fetchMovies();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Column(
-          children: [
-            FutureBuilder<List<MovieData>>(
-              future: movieData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Expanded(
-                      child: Stack(
-                          children: snapshot.data!
-                              .map((e) => Dismissible(
-                                  key: ValueKey(e.tmdbId),
-                                  onDismissed: (direction) {
-                                    if (direction ==
-                                        DismissDirection.startToEnd) {
-                                      _rateMovie(
-                                          true, snapshot.data!.first.tmdbId);
-                                    } else {
-                                      _rateMovie(
-                                          true, snapshot.data!.first.tmdbId);
-                                    }
-                                  },
-                                  child: MovieCard(
-                                      movieData: snapshot.data!.first)))
-                              .toList()));
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+              child: Stack(children: [
+            if (_movieData.isEmpty)
+              const CircularProgressIndicator()
+            else
+              ..._movieData.map((movie) => Dismissible(
+                  key: UniqueKey(),
+                  onDismissed: (direction) {
+                    if (direction == DismissDirection.startToEnd) {
+                      _rateMovie(true, movie.tmdbId);
+                    } else {
+                      _rateMovie(true, movie.tmdbId);
+                    }
+                    setState(() {
+                      _movieData.remove(movie);
+                    });
+                    if (_movieData.length <= 2) {
+                      fetchMovies();
+                    }
+                  },
+                  child: MovieCard(movieData: movie)))
 
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
-            ),
-            ActionButtonsWidget()
-          ],
-        ));
+            // By default, show a loading spinner.
+          ])),
+          const Align(
+              alignment: Alignment.bottomCenter, child: ActionButtonsWidget())
+        ],
+      ),
+    );
   }
 }

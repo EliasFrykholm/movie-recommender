@@ -27,7 +27,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  device_info_plus: ^3.0.1
+  device_info_plus: ^3.1.1
   url_launcher: ^6.0.12
   http: ^0.13.4
   flutter:

@@ -1,15 +1,15 @@
-import 'dart:convert';
-
 import 'package:app/action_buttons_widget.dart';
+import 'package:app/api/rate.dart';
+import 'package:app/api/recommendations.dart';
+import 'package:app/exceptions/unknown_user_exception.dart';
 import 'package:app/genre_rating.dart';
 import 'package:app/models/movie_data.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'MovieCard/movie_card.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
             primaryColor: Colors.deepOrange,
             primarySwatch: Colors.deepOrange,
             brightness: Brightness.dark),
-        home: const MyHomePage(),
+        home: MyHomePage(),
         routes: <String, WidgetBuilder>{
           '/genres': (BuildContext context) => GenreRating(),
         });
@@ -40,50 +40,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<MovieData> _movieData = [];
 
-  void fetchMovies() async {
-    final response = await http
-        .get(Uri.parse('http://localhost:8080/recommendation/movie/test1234'));
-
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      List<dynamic> responseData = jsonDecode(response.body);
-      List<MovieData> movies =
-          responseData.map((e) => MovieData.fromJson(e)).toList();
-      setState(() {
-        _movieData.addAll(movies);
-      });
-    } else if (response.statusCode == 401) {
-      Navigator.pushReplacementNamed(context, "/genres");
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      print(response.statusCode);
-      throw Exception('Failed to load data');
-    }
-  }
-
-  void _rateMovie(bool liked, int tmdbId) async {
-    final response = await http.post(
-        Uri.parse("http://localhost:8080/rate/movie"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body:
-            json.encode({"userId": "elias", "tmdbId": tmdbId, "liked": liked}));
-
-    if (response.statusCode == 200) {
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      print(response.statusCode);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    fetchMovies();
+    fetchMovies()
+        .then((value) => {
+              setState(() {
+                _movieData = value;
+              })
+            })
+        .onError((error, stackTrace) => {
+              if (error.runtimeType == UnknownUserException)
+                Navigator.pushReplacementNamed(context, "/genres")
+              else
+                throw error.runtimeType
+            });
   }
 
   @override
@@ -112,9 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               key: UniqueKey(),
                               onDismissed: (direction) {
                                 if (direction == DismissDirection.startToEnd) {
-                                  _rateMovie(true, movie.tmdbId);
+                                  rateMovie(true, movie.tmdbId);
                                 } else {
-                                  _rateMovie(true, movie.tmdbId);
+                                  rateMovie(true, movie.tmdbId);
                                 }
                                 setState(() {
                                   _movieData.remove(movie);

@@ -1,8 +1,7 @@
-import 'dart:convert';
-
+import 'package:app/api/data.dart';
+import 'package:app/api/rate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class GenreRating extends StatefulWidget {
   @override
@@ -11,24 +10,6 @@ class GenreRating extends StatefulWidget {
 
 class GenreRatingState extends State<GenreRating> {
   List<Genre> genres = [];
-
-  void fetchGenres() async {
-    final response =
-        await http.get(Uri.parse("http://localhost:8081/moviedata/genres"));
-    if (response.statusCode == 200) {
-      setState(() {
-        List<dynamic> responseData = jsonDecode(response.body);
-        setState(() {
-          genres =
-              responseData.cast<String>().map((e) => Genre(name: e)).toList();
-        });
-      });
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      print(response.statusCode);
-    }
-  }
 
   void itemChange(bool val, int index) {
     setState(() {
@@ -39,27 +20,16 @@ class GenreRatingState extends State<GenreRating> {
   @override
   void initState() {
     super.initState();
-    fetchGenres();
+    fetchGenres().then((value) => setState(() {
+          genres = value;
+        }));
   }
 
   @override
   Widget build(BuildContext context) {
-    void onSave() async {
-      final response = await http.post(
-          Uri.parse("http://localhost:8080/rate/genres"),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: json.encode({
-            "userId": "test1234",
-            "ratings": genres.map((e) => e.toJson()).toList()
-          }));
-
-      if (response.statusCode == 200) {
-        Navigator.popAndPushNamed(context, "/");
-      } else {
-        print(response.statusCode);
-      }
+    void onSave() {
+      rateGenres(genres).then(
+          (value) => {if (value) Navigator.popAndPushNamed(context, "/")});
     }
 
     return Scaffold(

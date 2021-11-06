@@ -18,13 +18,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-          primaryColor: Colors.deepOrange,
-          primarySwatch: Colors.deepOrange,
-          brightness: Brightness.dark),
-      home: const MyHomePage(),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+            primaryColor: Colors.deepOrange,
+            primarySwatch: Colors.deepOrange,
+            brightness: Brightness.dark),
+        home: const MyHomePage(),
+        routes: <String, WidgetBuilder>{
+          '/genres': (BuildContext context) => GenreRating(),
+        });
   }
 }
 
@@ -40,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void fetchMovies() async {
     final response = await http
-        .get(Uri.parse('http://localhost:8080/recommendation/movie/test123'));
+        .get(Uri.parse('http://localhost:8080/recommendation/movie/test1234'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -52,10 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _movieData.addAll(movies);
       });
     } else if (response.statusCode == 401) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => GenreRating()),
-      );
+      Navigator.pushReplacementNamed(context, "/genres");
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.

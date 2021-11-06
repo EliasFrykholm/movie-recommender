@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:app/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,25 +30,6 @@ class GenreRatingState extends State<GenreRating> {
     }
   }
 
-  void onSave() async {
-    final response = await http.post(
-        Uri.parse("http://localhost:8080/rate/genres"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: json.encode({
-          "userId": "test123",
-          "ratings": genres.map((e) => e.toJson()).toList()
-        }));
-
-    if (response.statusCode == 200) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-    } else {
-      print(response.statusCode);
-    }
-  }
-
   void itemChange(bool val, int index) {
     setState(() {
       genres[index].liked = val;
@@ -64,6 +44,24 @@ class GenreRatingState extends State<GenreRating> {
 
   @override
   Widget build(BuildContext context) {
+    void onSave() async {
+      final response = await http.post(
+          Uri.parse("http://localhost:8080/rate/genres"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: json.encode({
+            "userId": "test1234",
+            "ratings": genres.map((e) => e.toJson()).toList()
+          }));
+
+      if (response.statusCode == 200) {
+        Navigator.popAndPushNamed(context, "/");
+      } else {
+        print(response.statusCode);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select preferred genres'),
@@ -94,6 +92,7 @@ class GenreRatingState extends State<GenreRating> {
             );
           }),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         child: Icon(Icons.save),
         backgroundColor: Colors.primaries.first,
         foregroundColor: Colors.black,

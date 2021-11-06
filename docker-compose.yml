@@ -11,3 +11,26 @@ services:
     volumes:
       - ./data:/data
     restart: always
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD}
+  recommender:
+    build: ./recommendation-api
+    container_name: recommendation-api
+    depends_on:
+      - "neo4j"
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_NEO4J_URI: neo4j://neo4j:7687
+      MOVIEDATA_API_PATH: http://moviedata:8081
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${NEO4J_PASSWORD}
+  moviedata:
+    build: ./moviedata-api
+    container_name: moviedata-api
+    depends_on:
+      - "neo4j"
+    ports:
+      - "8081:8081"
+    environment:
+      TMDB_API_KEY: ${TMDB_API_KEY}

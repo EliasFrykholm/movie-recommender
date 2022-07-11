@@ -90,8 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                 setState(() {
                                   _movieData.remove(movie);
                                 });
-                                if (_movieData.length <= 2) {
-                                  fetchMovies();
+                                if (_movieData.length == 1) {
+                                  setState(() {
+                                    fetchMovies().then(
+                                        (value) => _movieData.addAll(value));
+                                  });
                                 }
                               },
                               child: MovieCard(movieData: movie))))
